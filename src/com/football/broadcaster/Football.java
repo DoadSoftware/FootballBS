@@ -38,14 +38,14 @@ public class Football extends Scene {
 
 	public ScoreBug updateScoreBug(List<Scene> scenes, Match match, Match swapMatch,FootballService footballService, PrintWriter print_writer)throws InterruptedException, MalformedURLException, IOException {
 		
-		populateCommonData(print_writer,true, match,session_selected_broadcaster);
-		
-		if(which_graphics_onscreen.equalsIgnoreCase("SCOREBUG")) {
-			scorebug = populateScoreBug(true, scorebug, print_writer, swapMatch,session_selected_broadcaster);
-		}else if(which_graphics_onscreen.equalsIgnoreCase("SCORELINE")) {
+		if(which_graphics_onscreen.equalsIgnoreCase("SCORELINE")) {
+			populateCommonData(print_writer,true, match,session_selected_broadcaster);
 			populateMatchStats(print_writer,true,footballService, match,session_selected_broadcaster);
 		}else if(which_graphics_onscreen.equalsIgnoreCase("SUBS")) {
+			populateCommonData(print_writer,true, match,session_selected_broadcaster);
 			populateMatchIdSubs(print_writer,true, match,session_selected_broadcaster);
+		}else if(which_graphics_onscreen.equalsIgnoreCase("MATCHSTATS")) {
+			populateCommonData(print_writer,true, match,session_selected_broadcaster);
 		}
 		return scorebug;
 	}
@@ -55,11 +55,11 @@ public class Football extends Scene {
 		switch (whatToProcess.toUpperCase()) {
 		//ScoreBug
 		case "POPULATE-MATCHID": case "POPULATE-SCORELINE": case "POPULATE-TOURNAMENT_LOGO": case "POPULATE-EXTRA_TIME":
-		case "POPULATE-SCOREBUG-SUBS": case "POPULATE-MATCHSUBS": case "POPULATE-TIME_EXTRA":
+		case "POPULATE-SCOREBUG-SUBS": case "POPULATE-MATCHSUBS": case "POPULATE-TIME_EXTRA": case "POPULATE-MATCHSTATS":
 			
 		switch (whatToProcess.toUpperCase()) {
 		case "POPULATE-MATCHID": case "POPULATE-SCORELINE": case "POPULATE-TOURNAMENT_LOGO": case "POPULATE-GOLDEN_RAID":
-		case "POPULATE-MATCHSUBS":  case "POPULATE-TIME_EXTRA":
+		case "POPULATE-MATCHSUBS":  case "POPULATE-TIME_EXTRA": case "POPULATE-MATCHSTATS":
 			scenes.get(0).scene_load(print_writer, session_selected_broadcaster);
 			break;
 		}
@@ -76,9 +76,17 @@ public class Football extends Scene {
 		case "POPULATE-EXTRA_TIME":
 			populateExtraTime(print_writer, false,scorebug,valueToProcess.split(",")[0],match,session_selected_broadcaster);
 			break;
+		case "POPULATE-MATCHSTATS":
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 1;");
+			populateMatchData(print_writer,false, match, session_selected_broadcaster);
+			populateCommonData(print_writer,false, match, session_selected_broadcaster);
+			break;
 		case "POPULATE-MATCHID":
 			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 1;");
-			populateCommonData(print_writer,false, match, session_selected_broadcaster);
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vScoreVS 0;");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader " + 
+					match.getMatchIdent().toUpperCase() + ";");
+//			populateCommonData(print_writer,false, match, session_selected_broadcaster);
 			break;
 		case "POPULATE-MATCHSUBS":
 			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 2;");
@@ -95,12 +103,17 @@ public class Football extends Scene {
 			break;
 		}
 		
-		case "ANIMATE-IN-MATCHSUBS": case "ANIMATE-IN-TIME_EXTRA":
+		case "ANIMATE-IN-MATCHSUBS": case "ANIMATE-IN-TIME_EXTRA": case "ANIMATE-IN-MATCHSTATS":
 		case "ANIMATE-IN-MATCHID": case "CLEAR-ALL": case "ANIMATE-OUT-SCOREBUG": case "RESET-ALL-ANIMATION":
 		case "ANIMATE-IN-SCORELINE": case "ANIMATE-OUT": case "ANIMATE-IN-TOURNAMENT_LOGO":
 			
 			switch (whatToProcess.toUpperCase()) {
 			
+			case "ANIMATE-IN-MATCHSTATS":
+				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
+				is_infobar = true;
+				which_graphics_onscreen = "MATCHSTATS";
+				break;
 			case "ANIMATE-IN-TIME_EXTRA":
 				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
 				is_infobar = true;
@@ -475,6 +488,8 @@ public class Football extends Scene {
 			System.out.println("ERROR: ScoreBug -> Match is null");
 		} else {
 			
+			printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader " + match.getMatchIdent() + ";");
+			
 		    if (match.getClock() != null && match.getClock().getMatchHalves() != null) {
 		        String matchHalf = match.getClock().getMatchHalves();
 		        String subHeader;
@@ -506,6 +521,10 @@ public class Football extends Scene {
 		        printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader02 " + subHeader + ";");
 		    }
 		    
+		    printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vScoreVS 1;");
+	    	printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tScore " + 
+	    			match.getHomeTeamScore() + "-" + match.getAwayTeamScore() + ";");
+	    	
 		    if(isThisUpdating == false) {
 		    	
 		    	printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectExtra 0;");
@@ -530,13 +549,62 @@ public class Football extends Scene {
 		}
 	}
 	
-	public void populateCommonData(PrintWriter printWriter,boolean isThisUpdating, Match match, String selectedbroadcaster) throws IOException, InterruptedException {
+	public void populateMatchData(PrintWriter printWriter,boolean isThisUpdating, Match match, String selectedbroadcaster) throws IOException, InterruptedException {
 		if (match == null) {
 			System.out.println("ERROR: ScoreBug -> Match is null");
 		} else {
 			
-			printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader " + 
-					match.getMatchIdent().toUpperCase() + ";");
+			if (match.getClock() != null && match.getClock().getMatchHalves() != null) {
+		        String matchHalf = match.getClock().getMatchHalves();
+		        String subHeader;
+		        
+		        switch (matchHalf) {
+			        case "first":
+		                subHeader = "FIRST HALF";
+		                break;
+		            case "second":
+		                subHeader = "SECOND HALF";
+		                break;
+		            case "extra1":
+		                subHeader = "EXTRA TIME 1";
+		                break;
+		            case "extra2":
+		                subHeader = "EXTRA TIME 2";
+		                break;
+		            case "half":
+		                subHeader = match.getClock().getMatchHalves().toUpperCase() + " TIME";
+		                break;
+		            case "full":
+		                subHeader = match.getClock().getMatchHalves().toUpperCase() + " TIME";
+		                break;
+		            default:
+		                subHeader = "";
+		                break;
+		        }
+
+		        printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader " + subHeader + ";");
+		    }
+		}
+		
+		if(isThisUpdating == false) {
+			printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+		    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+		    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+		    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+		    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+		    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+		    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+			TimeUnit.SECONDS.sleep(1);
+			printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+			printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+		}
+	}
+	
+	public void populateCommonData(PrintWriter printWriter,boolean isThisUpdating, Match match, String selectedbroadcaster) throws IOException, InterruptedException {
+		if (match == null) {
+			System.out.println("ERROR: ScoreBug -> Match is null");
+		} else {
 			
 			printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET lgHomeTeamLogo " + logo_path + 
 		            match.getHomeTeam().getTeamName4() + ".png" + ";");
@@ -548,14 +616,10 @@ public class Football extends Scene {
 		    printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tAwayTeamName " + 
 		            match.getAwayTeam().getTeamName1() + ";");
 		    
-		    
-		    if(match.getHomeTeamScore() == 0 && match.getAwayTeamScore() == 0) {
-		    	printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vScoreVS 0;");
-		    }else {
-		    	printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vScoreVS 1;");
-		    	printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tScore " + 
-		    			match.getHomeTeamScore() + "-" + match.getAwayTeamScore() + ";");
-		    }
+		    printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vScoreVS 1;");
+	    	printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tScore " + 
+	    			match.getHomeTeamScore() + "-" + match.getAwayTeamScore() + ";"); 
+		   
 		}
 		
 		if(isThisUpdating == false) {

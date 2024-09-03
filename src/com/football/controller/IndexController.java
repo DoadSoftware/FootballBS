@@ -147,12 +147,12 @@ public class IndexController
 		
 		switch (session_selected_broadcaster.toUpperCase()) {
 		case "FOOTBALL":
-			session_selected_scenes.add(new Scene("D:\\DOAD_In_House_Everest\\Everest_Sports\\Everest_Intercontinental_2024\\Scene\\BigScreen.sum",FootballUtil.ONE)); // Front layer
+			session_selected_scenes.add(new Scene("D:\\DOAD_In_House_Everest\\Everest_Sports\\Everest_Intercontinental_2024\\Scene\\BigScreen_New.sum",FootballUtil.ONE)); // Front layer
 			//session_selected_scenes.add(new Scene(KabaddiUtil.BG_SCENE_PATH,KabaddiUtil.THREE));
 			session_selected_scenes.get(0).scene_load(print_writer, session_selected_broadcaster);
 			
 			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 0 ;");
-//			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In START;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In START;");
 			//session_selected_scenes.get(1).scene_load(print_writer, session_selected_broadcaster);
 			this_Football = new Football();
 			this_Football.scorebug = new ScoreBug();

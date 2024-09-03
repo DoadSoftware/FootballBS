@@ -115,15 +115,21 @@ function processUserSelectionData(whatToProcess,dataToProcess){
 			processFootballProcedures('POPULATE-MATCHID');
 			break;
 		case 114:
+			processFootballProcedures('POPULATE-MATCHSTATS');
+			break;
+		case 115:
+			processFootballProcedures('POPULATE-MATCHSUBS');
+			break;		
+		/*case 114:
 			processFootballProcedures('POPULATE-MATCHSUBS');
 			break;	
 		case 115:
 			processFootballProcedures('POPULATE-SCORELINE');
-			break;	
+			break;*/	
 		case 112:
 			processFootballProcedures('POPULATE-TOURNAMENT_LOGO');
 			break;
-		case 69:'e'
+		/*case 69:'e'
 			addItemsToList('EXTRA-TIME_OPTION',null);
 			break;
 		case 82:'r'
@@ -134,7 +140,7 @@ function processUserSelectionData(whatToProcess,dataToProcess){
 			$("#match_configuration").hide();
 			$("#football_div").hide();
 			addItemsToList('SCOREBUG-SUBSTITUTION-OPTIONS',null);
-			break;		
+			break;*/		
 		}
 		
 		break;
@@ -251,14 +257,19 @@ function processFootballProcedures(whatToProcess, whichInput)
 				}
 				
 				if(data){
-					if($('#matchFileTimeStamp').val() != data.matchFileTimeStamp) {
+					session_match = data;
+					addItemsToList('LOAD_MATCH',data);
+					addItemsToList('LOAD_EVENTS',data);
+					document.getElementById('football_div').style.display = '';
+					document.getElementById('select_event_div').style.display = '';
+					/*if($('#matchFileTimeStamp').val() != data.matchFileTimeStamp) {
 						document.getElementById('matchFileTimeStamp').value = data.matchFileTimeStamp;
 						session_match = data;
 						addItemsToList('LOAD_MATCH',data);
 						addItemsToList('LOAD_EVENTS',data);
 						document.getElementById('football_div').style.display = '';
 						document.getElementById('select_event_div').style.display = '';
-					}
+					}*/
 				}
 				break;	
 			case 'LOAD_MATCH':
@@ -271,9 +282,12 @@ function processFootballProcedures(whatToProcess, whichInput)
 				break;
 				
         	case 'POPULATE-MATCHID': case 'POPULATE-SCORELINE': case 'POPULATE-TOURNAMENT_LOGO': case 'POPULATE-MATCHSUBS':
-        	case 'POPULATE-SCORELINE': case 'POPULATE-TIME_EXTRA':
+        	case 'POPULATE-SCORELINE': case 'POPULATE-TIME_EXTRA': case 'POPULATE-MATCHSTATS':
         		if(confirm('Animate In?') == true){
 					switch(whatToProcess){
+					case 'POPULATE-MATCHSTATS':
+						processFootballProcedures('ANIMATE-IN-MATCHSTATS');		
+						break;
 					case 'POPULATE-TIME_EXTRA':
 						processFootballProcedures('ANIMATE-IN-TIME_EXTRA');		
 						break;
