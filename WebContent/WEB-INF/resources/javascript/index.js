@@ -119,7 +119,18 @@ function processUserSelectionData(whatToProcess,dataToProcess){
 			break;
 		case 115:
 			processFootballProcedures('POPULATE-MATCHSUBS');
-			break;		
+			break;
+		case 116:
+			addItemsToList('TEAMLIST-OPTIONS',null);
+			break;
+		case 117:
+			addItemsToList('NAMESUPER-CARD-OPTIONS',null);
+			addItemsToList('POPULATE-PLAYER',null);
+			break;
+		case 71:
+			addItemsToList('GOAL-GFX-OPTIONS',null);
+			addItemsToList('POPULATE-PLAYER',null);
+			break;					
 		/*case 114:
 			processFootballProcedures('POPULATE-MATCHSUBS');
 			break;	
@@ -129,18 +140,22 @@ function processUserSelectionData(whatToProcess,dataToProcess){
 		case 112:
 			processFootballProcedures('POPULATE-TOURNAMENT_LOGO');
 			break;
+		case 77: 'm'
+			$("#select_event_div").hide();
+			$("#match_configuration").hide();
+			$("#football_div").hide();
+			addItemsToList('SCOREBUG-SUBSTITUTION-OPTIONS',null);
+			break;
+		case 84: 'T - OFFICIALS'
+			processFootballProcedures('POPULATE-OFFICIALS');
+			break;		
 		/*case 69:'e'
 			addItemsToList('EXTRA-TIME_OPTION',null);
 			break;
 		case 82:'r'
 			addItemsToList('TIME-EXTRA_OPTION',null);
 			break;
-		case 77: 'm'
-			$("#select_event_div").hide();
-			$("#match_configuration").hide();
-			$("#football_div").hide();
-			addItemsToList('SCOREBUG-SUBSTITUTION-OPTIONS',null);
-			break;*/		
+		*/		
 		}
 		
 		break;
@@ -180,6 +195,9 @@ function processUserSelection(whichInput)
 		$("#match_configuration").show();
 		$("#football_div").show();
 		break;
+	case 'selectTeam': case 'selectCaptianWicketKeeper':
+		addItemsToList('POPULATE-PLAYER',match_data);
+		break;
 	case 'populate_extra_time_btn':
 		processFootballProcedures('POPULATE-EXTRA_TIME');
 		break;
@@ -188,7 +206,16 @@ function processUserSelection(whichInput)
 		break;
 	case 'populate_scorebug_subs_btn':
 		processFootballProcedures('POPULATE-SCOREBUG-SUBS');
-		break;		
+		break;
+	case 'populate_teamlist_btn':
+		processFootballProcedures('POPULATE-TEAMLIST');
+		break;	
+	case 'populate_namesuper_card_btn':
+		processFootballProcedures('POPULATE-L3-NAMESUPER-CARD');
+		break;
+	case 'populate_goal_btn':
+		processFootballProcedures('POPULATE-GOAL');
+		break;				
 	}
 }
 function processFootballProcedures(whatToProcess, whichInput)
@@ -213,8 +240,18 @@ function processFootballProcedures(whatToProcess, whichInput)
 		value_to_process = $('#selectExtratime').val();
 		break;
 	case 'POPULATE-SCOREBUG-SUBS':
+		value_to_process = $('#selectStatsType option:selected').val() + ',' + $('#selectTeam option:selected').val();
+		break;
+	case 'POPULATE-TEAMLIST':
 		value_to_process = $('#selectTeam option:selected').val();
-		break;					
+		break;	
+	case 'POPULATE-L3-NAMESUPER-CARD':
+		value_to_process = $('#selectTeam option:selected').val() + ',' + 
+		$('#selectCaptainWicketKeeper option:selected').val() + ',' + $('#selectPlayer option:selected').val() ;
+		break;
+	case 'POPULATE-GOAL':
+		value_to_process = 	$('#selectTeam option:selected').val() + ',' + $('#selectPlayer option:selected').val();
+		break;							
 	}
 
 	$.ajax({    
@@ -282,9 +319,23 @@ function processFootballProcedures(whatToProcess, whichInput)
 				break;
 				
         	case 'POPULATE-MATCHID': case 'POPULATE-SCORELINE': case 'POPULATE-TOURNAMENT_LOGO': case 'POPULATE-MATCHSUBS':
-        	case 'POPULATE-SCORELINE': case 'POPULATE-TIME_EXTRA': case 'POPULATE-MATCHSTATS':
+        	case 'POPULATE-SCORELINE': case 'POPULATE-TIME_EXTRA': case 'POPULATE-MATCHSTATS': case 'POPULATE-TEAMLIST':
+        	case 'POPULATE-L3-NAMESUPER-CARD': case 'POPULATE-SCOREBUG-SUBS': case 'POPULATE-OFFICIALS':
+        	case 'POPULATE-GOAL':
         		if(confirm('Animate In?') == true){
 					switch(whatToProcess){
+					case 'POPULATE-GOAL':
+						processFootballProcedures('ANIMATE-IN-GOAL');
+						break;	
+					case 'POPULATE-OFFICIALS':
+						processFootballProcedures('ANIMATE-IN-OFFICIALS');
+						break;	
+					case 'POPULATE-SCOREBUG-SUBS':
+						processFootballProcedures('ANIMATE-IN-SCOREBUG-SUBS');		
+						break;
+					case 'POPULATE-L3-NAMESUPER-CARD':
+						processFootballProcedures('ANIMATE-IN-NAMESUPER-CARD');		
+						break;
 					case 'POPULATE-MATCHSTATS':
 						processFootballProcedures('ANIMATE-IN-MATCHSTATS');		
 						break;
@@ -294,6 +345,9 @@ function processFootballProcedures(whatToProcess, whichInput)
 					case 'POPULATE-MATCHSUBS':
 						processFootballProcedures('ANIMATE-IN-MATCHSUBS');		
 						break;	
+					case 'POPULATE-TEAMLIST':
+						processFootballProcedures('ANIMATE-IN-TEAMLIST');	
+						break;		
 					case 'POPULATE-MATCHID':
 						processFootballProcedures('ANIMATE-IN-MATCHID');		
 						break;
@@ -302,9 +356,6 @@ function processFootballProcedures(whatToProcess, whichInput)
 						break;
 					case 'POPULATE-TOURNAMENT_LOGO':
 						processFootballProcedures('ANIMATE-IN-TOURNAMENT_LOGO');		
-						break;	
-					case 'POPULATE-GOLDEN_RAID':
-						processFootballProcedures('ANIMATE-IN-GOLDEN_RAID');		
 						break;
 					}
 				}
@@ -322,8 +373,136 @@ function addItemsToList(whatToProcess, dataToProcess)
 	var div,row,header_text,event_text,select,option,tr,th,thead,text,table,tbody,teamName;
 	var cellCount=0;
 	switch (whatToProcess) {
+	
+	case 'POPULATE-PLAYER':
+		$('#selectPlayer').empty();
+		if(match_data.homeTeamId ==  $('#selectTeam option:selected').val()){
+			match_data.homeSquad.forEach(function(hs,index,arr){
+				$('#selectPlayer').append(
+					$(document.createElement('option')).prop({
+	                value: hs.playerId,
+	                text: hs.jersey_number + ' - ' + hs.full_name
+		        }))					
+			});
+			match_data.homeSubstitutes.forEach(function(hsub,index,arr){
+				$('#selectPlayer').append(
+					$(document.createElement('option')).prop({
+					value: hsub.playerId,
+					text: hsub.jersey_number + ' - ' + hsub.full_name + ' (SUB)'
+				}))
+			});
+		}
+		else {
+			match_data.awaySquad.forEach(function(as,index,arr){
+				$('#selectPlayer').append(
+					$(document.createElement('option')).prop({
+	                value: as.playerId,
+	                text: as.jersey_number + ' - ' + as.full_name
+		        }))					
+			});
+			match_data.awaySubstitutes.forEach(function(asub,index,arr){
+				$('#selectPlayer').append(
+					$(document.createElement('option')).prop({
+					value: asub.playerId,
+					text: asub.jersey_number + ' - ' + asub.full_name + ' (SUB)'
+				}))
+			});
+		}
 		
-	case 'SCOREBUG-SUBSTITUTION-OPTIONS':
+		break;
+	case 'NAMESUPER-CARD-OPTIONS':
+		$('#select_graphic_options_div').empty();
+	
+		header_text = document.createElement('h6');
+		header_text.innerHTML = 'Select Graphic Options';
+		document.getElementById('select_graphic_options_div').appendChild(header_text);
+		
+		table = document.createElement('table');
+		table.setAttribute('class', 'table table-bordered');
+				
+		tbody = document.createElement('tbody');
+
+		table.appendChild(tbody);
+		document.getElementById('select_graphic_options_div').appendChild(table);
+		
+		row = tbody.insertRow(tbody.rows.length);
+		
+		select = document.createElement('select');
+		select.id = 'selectTeam';
+		select.name = select.id;
+		
+		option = document.createElement('option');
+		option.value = match_data.homeTeamId;
+		option.text = match_data.homeTeam.teamName1;
+		select.appendChild(option);
+		
+		option = document.createElement('option');
+		option.value = match_data.awayTeamId;
+		option.text = match_data.awayTeam.teamName1;
+		select.appendChild(option);
+	
+		select.setAttribute('onchange',"processUserSelection(this)");
+		row.insertCell(cellCount).appendChild(select);
+		cellCount = cellCount + 1;
+
+		select = document.createElement('select');
+		select.style = 'width:100px';
+		select.id = 'selectCaptainWicketKeeper';
+		select.name = select.id;
+		
+		option = document.createElement('option');
+		option.value = 'yellow';
+		option.text = 'YELLOW CARD';
+		select.appendChild(option);
+		
+		option = document.createElement('option');
+		option.value = 'red';
+		option.text = 'RED CARD';
+		select.appendChild(option);
+		
+		option = document.createElement('option');
+		option.value = 'yellow_red';
+		option.text = '2YELLOW/RED';
+		select.appendChild(option);
+		
+		select.setAttribute('onchange',"processUserSelection(this)");
+		row.insertCell(cellCount).appendChild(select);
+		cellCount = cellCount + 1;
+		
+		select = document.createElement('select');
+		select.style = 'width:100px';
+		select.id = 'selectPlayer';
+		select.name = select.id;
+		
+		row.insertCell(cellCount).appendChild(select);
+		cellCount = cellCount + 1;
+		
+		option = document.createElement('input');
+   	 	option.type = 'button';
+	    option.name = 'populate_namesuper_card_btn';
+	    option.value = 'Populate Namesuper Card';
+	    option.id = option.name;
+	    option.setAttribute('onclick',"processUserSelection(this)");
+	    
+	    div = document.createElement('div');
+	    div.append(option);
+
+		option = document.createElement('input');
+		option.type = 'button';
+		option.name = 'cancel_graphics_btn';
+		option.id = option.name;
+		option.value = 'Cancel';
+		option.setAttribute('onclick','processUserSelection(this)');
+
+	    div.append(option);
+	    
+	    row.insertCell(cellCount).appendChild(div);
+	    cellCount = cellCount + 1;
+	    
+		document.getElementById('select_graphic_options_div').style.display = '';
+		break;
+	
+	case 'SCOREBUG-SUBSTITUTION-OPTIONS': case 'TEAMLIST-OPTIONS': case 'GOAL-GFX-OPTIONS':
 	
 		switch ($('#selectedBroadcaster').val().toUpperCase()) {
 		case 'FOOTBALL':
@@ -345,7 +524,63 @@ function addItemsToList(whatToProcess, dataToProcess)
 			row = tbody.insertRow(tbody.rows.length);
 			
 			switch(whatToProcess){
-				case 'SCOREBUG-SUBSTITUTION-OPTIONS':					
+				case 'GOAL-GFX-OPTIONS':
+					select = document.createElement('select');
+					select.id = 'selectTeam';
+					select.name = select.id;
+					
+					option = document.createElement('option');
+					option.value = match_data.homeTeamId;
+					option.text = match_data.homeTeam.teamName1;
+					select.appendChild(option);
+					
+					option = document.createElement('option');
+					option.value = match_data.awayTeamId;
+					option.text = match_data.awayTeam.teamName1;
+					select.appendChild(option);
+					
+					select.setAttribute('onchange',"processUserSelection(this)");
+					row.insertCell(cellCount).appendChild(select);
+					cellCount = cellCount + 1;
+					
+					select = document.createElement('select');
+					select.style = 'width:100px';
+					select.id = 'selectPlayer';
+					select.name = select.id;
+					
+					row.insertCell(cellCount).appendChild(select);
+					cellCount = cellCount + 1;
+					
+					option = document.createElement('input');
+		    		option.type = 'button';
+		    		
+		    		option.name = 'populate_goal_btn';
+		    		option.value = 'Populate Goal';
+		    		
+		    		option.id = option.name;
+				    option.setAttribute('onclick',"processUserSelection(this)");
+				    
+				    div = document.createElement('div');
+				    div.append(option);
+				    
+				    row.insertCell(cellCount).appendChild(div);
+				    cellCount = cellCount + 1;
+				    
+					option = document.createElement('input');
+					option.type = 'button';
+					option.name = 'cancel_graphics_btn';
+					option.id = option.name;
+					option.value = 'Cancel';
+					option.setAttribute('onclick','processUserSelection(this)');
+			
+				    div.append(option);
+				    
+				    row.insertCell(cellCount).appendChild(div);
+				    cellCount = cellCount + 1;
+				    
+					document.getElementById('select_graphic_options_div').style.display = '';
+					break;
+				case 'SCOREBUG-SUBSTITUTION-OPTIONS': case 'TEAMLIST-OPTIONS':				
 					switch ($('#selectedBroadcaster').val().toUpperCase()){
 					case 'FOOTBALL':
 						select = document.createElement('select');
@@ -365,20 +600,67 @@ function addItemsToList(whatToProcess, dataToProcess)
 						row.insertCell(cellCount).appendChild(select);
 						cellCount = cellCount + 1;
 						
-						option = document.createElement('input');
-			    		option.type = 'button';
-			    		
-			    		option.name = 'populate_scorebug_subs_btn';
-			    		option.value = 'Populate Subs';
-			    		
-			    		option.id = option.name;
-					    option.setAttribute('onclick',"processUserSelection(this)");
+						switch(whatToProcess){
+							case 'SCOREBUG-SUBSTITUTION-OPTIONS':
+							select = document.createElement('select');
+							select.id = 'selectStatsType';
+							select.name = select.id;
+							
+							option = document.createElement('option');
+							option.value = 'single';
+							option.text = 'Single Substitution';
+							select.appendChild(option);
+							
+							option = document.createElement('option');
+							option.value = 'double';
+							option.text = 'Double Substitution';
+							select.appendChild(option);
+							
+							option = document.createElement('option');
+							option.value = 'triple';
+							option.text = 'Triple Substitution';
+							select.appendChild(option);
+							
+						    select.setAttribute('onchange',"processUserSelection(this)");
+							row.insertCell(cellCount).appendChild(select);
+							cellCount = cellCount + 1;
+							
+							option = document.createElement('input');
+				    		option.type = 'button';
+				    		
+				    		option.name = 'populate_scorebug_subs_btn';
+				    		option.value = 'Populate Subs';
+				    		
+				    		option.id = option.name;
+						    option.setAttribute('onclick',"processUserSelection(this)");
+						    
+						    div = document.createElement('div');
+						    div.append(option);
+						    
+						    row.insertCell(cellCount).appendChild(div);
+						    cellCount = cellCount + 1;
 					    
-					    div = document.createElement('div');
-					    div.append(option);
-					    
-					    row.insertCell(cellCount).appendChild(div);
-					    cellCount = cellCount + 1;
+							break;
+							
+						case 'TEAMLIST-OPTIONS':
+							option = document.createElement('input');
+				    		option.type = 'button';
+				    		
+				    		option.name = 'populate_teamlist_btn';
+				    		option.value = 'Populate List';
+				    		
+				    		option.id = option.name;
+						    option.setAttribute('onclick',"processUserSelection(this)");
+						    
+						    div = document.createElement('div');
+						    div.append(option);
+						    
+						    row.insertCell(cellCount).appendChild(div);
+						    cellCount = cellCount + 1;
+							break;	
+						}
+						
+						
 					    
 						option = document.createElement('input');
 						option.type = 'button';

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>FootballBS</groupId>
   <artifactId>FootballBS</artifactId>
-  <version>1.02</version>
+  <version>1.04</version>
   <packaging>war</packaging>
   <name>FootballBS</name>
   <properties>
@@ -17,7 +17,7 @@
     <groupId>com.football</groupId>
     <artifactId>FootballLibrary</artifactId>
     <scope>compile</scope>
-    <version>1.57</version>
+    <version>1.58</version>
 </dependency>
   
 <!-- https://mvnrepository.com/artifact/javax.annotation/javax.annotation-api -->
