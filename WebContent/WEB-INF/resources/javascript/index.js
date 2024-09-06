@@ -107,7 +107,28 @@ function processUserSelectionData(whatToProcess,dataToProcess){
 			if(confirm('It will Also Delete Your Preview from Directory...\r\n\r\n Are You Sure To Animate Out?') == true){
 				processFootballProcedures('ANIMATE-OUT');
 			}
-			break;	
+			break;
+		case 65:
+			addItemsToList('ATTENDENCE-OPTIONS',null);
+			break;
+		case 83:
+			processFootballProcedures('POPULATE-AIFF');
+			break;
+		case 68:
+			addItemsToList('ADDITIONAL_TIME-OPTIONS',null);
+			break;
+		case 70:
+			addItemsToList('FREETEXT-OPTIONS',null);
+			break;
+		case 90:
+			processFootballProcedures('POPULATE-WELCOME');
+			break;
+		case 88:
+			processFootballProcedures('POPULATE-SECURITY');
+			break;
+		case 67:
+			processFootballProcedures('POPULATE-NOTICE');
+			break;								
 		case 187:
 			processFootballProcedures('ANIMATE-OUT-SCOREBUG');
 			break;
@@ -215,6 +236,15 @@ function processUserSelection(whichInput)
 		break;
 	case 'populate_goal_btn':
 		processFootballProcedures('POPULATE-GOAL');
+		break;
+	case 'populate_att_btn':
+		processFootballProcedures('POPULATE-ATTENDENCE');
+		break;
+	case 'populate_additional_btn':
+		processFootballProcedures('POPULATE-ADDITIONAL');
+		break;
+	case 'populate_free_btn':
+		processFootballProcedures('POPULATE-FREE');
 		break;				
 	}
 }
@@ -251,6 +281,12 @@ function processFootballProcedures(whatToProcess, whichInput)
 		break;
 	case 'POPULATE-GOAL':
 		value_to_process = 	$('#selectTeam option:selected').val() + ',' + $('#selectPlayer option:selected').val();
+		break;
+	case 'POPULATE-ATTENDENCE': case 'POPULATE-ADDITIONAL':
+		value_to_process = 	$('#selectattendence').val();
+		break;
+	case 'POPULATE-FREE':
+		value_to_process = 	$('#selectFirst').val() + ',' + $('#selectSecond').val();
 		break;							
 	}
 
@@ -321,9 +357,31 @@ function processFootballProcedures(whatToProcess, whichInput)
         	case 'POPULATE-MATCHID': case 'POPULATE-SCORELINE': case 'POPULATE-TOURNAMENT_LOGO': case 'POPULATE-MATCHSUBS':
         	case 'POPULATE-SCORELINE': case 'POPULATE-TIME_EXTRA': case 'POPULATE-MATCHSTATS': case 'POPULATE-TEAMLIST':
         	case 'POPULATE-L3-NAMESUPER-CARD': case 'POPULATE-SCOREBUG-SUBS': case 'POPULATE-OFFICIALS':
-        	case 'POPULATE-GOAL':
+        	case 'POPULATE-GOAL': case 'POPULATE-ATTENDENCE': case 'POPULATE-AIFF': case 'POPULATE-ADDITIONAL':
+        	case 'POPULATE-FREE': case 'POPULATE-WELCOME': case 'POPULATE-SECURITY': case 'POPULATE-NOTICE':
         		if(confirm('Animate In?') == true){
 					switch(whatToProcess){
+					case 'POPULATE-WELCOME':
+						processFootballProcedures('ANIMATE-IN-WELCOME');
+						break;
+					case 'POPULATE-SECURITY':
+						processFootballProcedures('ANIMATE-IN-SECURITY');
+						break;
+					case 'POPULATE-NOTICE':
+						processFootballProcedures('ANIMATE-IN-NOTICE');
+						break;		
+					case 'POPULATE-FREE':
+						processFootballProcedures('ANIMATE-IN-FREE');
+						break;
+					case 'POPULATE-ADDITIONAL':
+						processFootballProcedures('ANIMATE-IN-ADDITIONAL');
+						break;
+					case 'POPULATE-AIFF':
+						processFootballProcedures('ANIMATE-IN-AIFF');
+						break;
+					case 'POPULATE-ATTENDENCE':
+						processFootballProcedures('ANIMATE-IN-ATTENDENCE');
+						break;
 					case 'POPULATE-GOAL':
 						processFootballProcedures('ANIMATE-IN-GOAL');
 						break;	
@@ -503,6 +561,7 @@ function addItemsToList(whatToProcess, dataToProcess)
 		break;
 	
 	case 'SCOREBUG-SUBSTITUTION-OPTIONS': case 'TEAMLIST-OPTIONS': case 'GOAL-GFX-OPTIONS':
+	case 'ATTENDENCE-OPTIONS': case 'ADDITIONAL_TIME-OPTIONS': case 'FREETEXT-OPTIONS':
 	
 		switch ($('#selectedBroadcaster').val().toUpperCase()) {
 		case 'FOOTBALL':
@@ -524,6 +583,112 @@ function addItemsToList(whatToProcess, dataToProcess)
 			row = tbody.insertRow(tbody.rows.length);
 			
 			switch(whatToProcess){
+				case 'FREETEXT-OPTIONS':
+					select = document.createElement('input');
+					select.type = "text";
+					select.id = 'selectFirst';
+					select.value = '';
+
+					row.insertCell(cellCount).appendChild(select);
+					cellCount = cellCount + 1;
+					
+					select = document.createElement('input');
+					select.type = "text";
+					select.id = 'selectSecond';
+					select.value = '';
+
+					row.insertCell(cellCount).appendChild(select);
+					cellCount = cellCount + 1;
+					
+					option = document.createElement('input');
+		    		option.type = 'button';
+		    		
+		    		option.name = 'populate_free_btn';
+		    		option.value = 'Populate Free';
+		    		
+		    		option.id = option.name;
+				    option.setAttribute('onclick',"processUserSelection(this)");
+				    
+				    div = document.createElement('div');
+				    div.append(option);
+				    
+				    row.insertCell(cellCount).appendChild(div);
+				    cellCount = cellCount + 1;
+					
+				    
+					option = document.createElement('input');
+					option.type = 'button';
+					option.name = 'cancel_graphics_btn';
+					option.id = option.name;
+					option.value = 'Cancel';
+					option.setAttribute('onclick','processUserSelection(this)');
+			
+				    div.append(option);
+				    
+				    row.insertCell(cellCount).appendChild(div);
+				    cellCount = cellCount + 1;
+				    
+					document.getElementById('select_graphic_options_div').style.display = '';
+					break;
+				case 'ATTENDENCE-OPTIONS': case 'ADDITIONAL_TIME-OPTIONS':
+					select = document.createElement('input');
+					select.type = "text";
+					select.id = 'selectattendence';
+					select.value = '';
+
+					row.insertCell(cellCount).appendChild(select);
+					cellCount = cellCount + 1;
+					
+					switch(whatToProcess){
+						case 'ATTENDENCE-OPTIONS':
+						option = document.createElement('input');
+			    		option.type = 'button';
+			    		
+			    		option.name = 'populate_att_btn';
+			    		option.value = 'Populate Att';
+			    		
+			    		option.id = option.name;
+					    option.setAttribute('onclick',"processUserSelection(this)");
+					    
+					    div = document.createElement('div');
+					    div.append(option);
+					    
+					    row.insertCell(cellCount).appendChild(div);
+					    cellCount = cellCount + 1;
+						break;
+						case 'ADDITIONAL_TIME-OPTIONS':
+						option = document.createElement('input');
+			    		option.type = 'button';
+			    		
+			    		option.name = 'populate_additional_btn';
+			    		option.value = 'Populate Additional';
+			    		
+			    		option.id = option.name;
+					    option.setAttribute('onclick',"processUserSelection(this)");
+					    
+					    div = document.createElement('div');
+					    div.append(option);
+					    
+					    row.insertCell(cellCount).appendChild(div);
+					    cellCount = cellCount + 1;
+						break;
+					}
+					
+				    
+					option = document.createElement('input');
+					option.type = 'button';
+					option.name = 'cancel_graphics_btn';
+					option.id = option.name;
+					option.value = 'Cancel';
+					option.setAttribute('onclick','processUserSelection(this)');
+			
+				    div.append(option);
+				    
+				    row.insertCell(cellCount).appendChild(div);
+				    cellCount = cellCount + 1;
+				    
+					document.getElementById('select_graphic_options_div').style.display = '';
+					break;
 				case 'GOAL-GFX-OPTIONS':
 					select = document.createElement('select');
 					select.id = 'selectTeam';

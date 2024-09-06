@@ -61,15 +61,82 @@ public class Football extends Scene {
 		case "POPULATE-MATCHID": case "POPULATE-SCORELINE": case "POPULATE-TOURNAMENT_LOGO": case "POPULATE-EXTRA_TIME":
 		case "POPULATE-SCOREBUG-SUBS": case "POPULATE-MATCHSUBS": case "POPULATE-TIME_EXTRA": case "POPULATE-MATCHSTATS":
 		case "POPULATE-TEAMLIST": case "POPULATE-L3-NAMESUPER-CARD": case "POPULATE-OFFICIALS": case "POPULATE-GOAL":
+		case "POPULATE-ATTENDENCE": case "POPULATE-AIFF": case "POPULATE-ADDITIONAL": case "POPULATE-FREE":
+		case "POPULATE-WELCOME": case "POPULATE-SECURITY": case "POPULATE-NOTICE":	
 			
 		switch (whatToProcess.toUpperCase()) {
 		case "POPULATE-MATCHID": case "POPULATE-SCORELINE": case "POPULATE-TOURNAMENT_LOGO": case "POPULATE-L3-NAMESUPER-CARD":
 		case "POPULATE-MATCHSUBS":  case "POPULATE-TIME_EXTRA": case "POPULATE-MATCHSTATS": case "POPULATE-TEAMLIST":
-		case "POPULATE-SCOREBUG-SUBS": case "POPULATE-OFFICIALS": case "POPULATE-GOAL":
+		case "POPULATE-SCOREBUG-SUBS": case "POPULATE-OFFICIALS": case "POPULATE-GOAL": case "POPULATE-ATTENDENCE":
+		case "POPULATE-AIFF": case "POPULATE-ADDITIONAL": case "POPULATE-FREE":
+		case "POPULATE-WELCOME": case "POPULATE-SECURITY": case "POPULATE-NOTICE":	
 			scenes.get(0).scene_load(print_writer, session_selected_broadcaster);
 			break;
 		}
 		switch (whatToProcess.toUpperCase()) {
+		case "POPULATE-WELCOME":
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 11;");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectMessage 0;");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 WELCOME MESSAGE;");
+			
+			print_writer.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+			TimeUnit.SECONDS.sleep(1);
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+			break;
+		case "POPULATE-SECURITY":
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 11;");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectMessage 2;");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 SECURITY ANNOUNCEMENT;");
+			
+			print_writer.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+			TimeUnit.SECONDS.sleep(1);
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+			break;
+		case "POPULATE-NOTICE":
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 11;");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectMessage 1;");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 IMPORTANCE NOTICE OF ENTERING;");
+			
+			print_writer.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+			TimeUnit.SECONDS.sleep(1);
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+			break;	
+		case "POPULATE-ATTENDENCE":
+			populateAttendence(print_writer,valueToProcess.split(",")[0], match, session_selected_broadcaster);
+			break;
+		case "POPULATE-AIFF":
+			populateAiff(print_writer);
+			break;
+		case "POPULATE-ADDITIONAL":
+			populateAdditional(print_writer,valueToProcess.split(",")[0], match, session_selected_broadcaster);
+			break;
+		case "POPULATE-FREE":
+			populateFree(print_writer,valueToProcess.split(",")[0],valueToProcess.split(",")[1], match, session_selected_broadcaster);
+			break;	
 		case "POPULATE-GOAL":
 			populateGoal(print_writer,Integer.valueOf(valueToProcess.split(",")[0]), Integer.valueOf(valueToProcess.split(",")[1]), match,footballService, session_selected_broadcaster);
 			break;
@@ -127,9 +194,37 @@ public class Football extends Scene {
 		case "ANIMATE-IN-MATCHID": case "CLEAR-ALL": case "ANIMATE-OUT-SCOREBUG": case "RESET-ALL-ANIMATION":
 		case "ANIMATE-IN-SCORELINE": case "ANIMATE-OUT": case "ANIMATE-IN-TOURNAMENT_LOGO":
 		case "ANIMATE-IN-NAMESUPER-CARD": case "ANIMATE-IN-TEAMLIST": case "ANIMATE-IN-SCOREBUG-SUBS":
-		case "ANIMATE-IN-OFFICIALS": case "ANIMATE-IN-GOAL":
+		case "ANIMATE-IN-OFFICIALS": case "ANIMATE-IN-GOAL": case "ANIMATE-IN-FREE": case "ANIMATE-IN-ADDITIONAL":
+		case "ANIMATE-IN-AIFF": case "ANIMATE-IN-ATTENDENCE": case "ANIMATE-IN-WELCOME": case "ANIMATE-IN-SECURITY": 
+		case "ANIMATE-IN-NOTICE":
+			
 			
 			switch (whatToProcess.toUpperCase()) {
+			case "ANIMATE-IN-WELCOME": case "ANIMATE-IN-SECURITY": case "ANIMATE-IN-NOTICE":
+				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
+				is_infobar = true;
+				which_graphics_onscreen = "ADD";
+				break;
+			case "ANIMATE-IN-ADDITIONAL":
+				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
+				is_infobar = true;
+				which_graphics_onscreen = "ADDITIONAL";
+				break;
+			case "ANIMATE-IN-AIFF":
+				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
+				is_infobar = true;
+				which_graphics_onscreen = "AIFF";
+				break;
+			case "ANIMATE-IN-ATTENDENCE":
+				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
+				is_infobar = true;
+				which_graphics_onscreen = "ATTENDENCE";
+				break;	
+			case "ANIMATE-IN-FREE":
+				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
+				is_infobar = true;
+				which_graphics_onscreen = "FREE";
+				break;
 			case "ANIMATE-IN-GOAL":
 				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
 				is_infobar = true;
@@ -201,6 +296,17 @@ public class Football extends Scene {
 				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL_TIMER SET tAwayRaiderClock TIMER_OFFSET 30;");
 				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL_TIMER SET tHomeRaiderClock TIMER_OFFSET 30;");
 				break;
+			case "ANIMATE-OUT":
+				switch (which_graphics_onscreen) {
+				case "ADD":
+					processAnimation(print_writer, "Out", "START", session_selected_broadcaster,1);
+					which_graphics_onscreen = "";
+					break;
+
+				default:
+					break;
+				}
+				break;
 			}
 			break;
 		}
@@ -246,7 +352,7 @@ public class Football extends Scene {
 	{
 		print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 9;");
 		
-		print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader SUBSTITUTE;");
+		print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader SUBSTITUTIONS;");
 		
 		List<Event> evnt = new ArrayList<Event>();
 		
@@ -261,6 +367,17 @@ public class Football extends Scene {
 				} 
 			}
 		}
+		if(match.getHomeTeamId() == TeamId) {
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET lgTeamLogo " + logo_path + 
+		            match.getHomeTeam().getTeamName4() + ".png" + ";");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tTeamName " + match.getHomeTeam().getTeamName1() + ";");
+		}else if(match.getAwayTeamId() == TeamId) {
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET lgTeamLogo " + logo_path + 
+		            match.getAwayTeam().getTeamName4() + ".png" + ";");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tTeamName " + match.getAwayTeam().getTeamName1() + ";");
+		}
+		
+		
 		switch(Type.toUpperCase())
 		{
 		case "SINGLE":
@@ -1102,6 +1219,86 @@ public class Football extends Scene {
 		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tDesig04 FOURTH OFFICIAL;");
 		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tDesig05 MATCH COMMISSIONER;");
 		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tDesig06 REFEREE ASSESSOR;");
+		
+		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+	    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+	    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+		TimeUnit.SECONDS.sleep(1);
+		printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+		printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+		
+	}
+	
+	public void populateAttendence(PrintWriter printWriter,String data, Match match, String selectedBroadcaster) throws InterruptedException {
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 10;");
+		
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 ATTENDANCE;");
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText02 " + data + ";");
+		
+		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+	    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+	    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+		TimeUnit.SECONDS.sleep(1);
+		printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+		printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+		
+	}
+	
+	public void populateAiff(PrintWriter printWriter) throws InterruptedException {
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 10;");
+		
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 ;");
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText02 AIFF MEETING;");
+		
+		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+	    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+	    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+		TimeUnit.SECONDS.sleep(1);
+		printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+		printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+		
+	}
+	
+	public void populateAdditional(PrintWriter printWriter,String data, Match match, String selectedBroadcaster) throws InterruptedException {
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 10;");
+		
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 ADDITIONAL TIME;");
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText02 " + data + " MINUTES;");
+		
+		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+	    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+	    printWriter.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+		TimeUnit.SECONDS.sleep(1);
+		printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+		printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+		
+	}
+	
+	public void populateFree(PrintWriter printWriter,String data1,String data2, Match match, String selectedBroadcaster) throws InterruptedException {
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 10;");
+		
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 " + data1 + ";");
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText02 " + data2 + ";");
 		
 		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
 	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
