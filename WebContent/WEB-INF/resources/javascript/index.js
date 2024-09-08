@@ -151,7 +151,10 @@ function processUserSelectionData(whatToProcess,dataToProcess){
 		case 71:
 			addItemsToList('GOAL-GFX-OPTIONS',null);
 			addItemsToList('POPULATE-PLAYER',null);
-			break;					
+			break;
+		case 89: 'Y - PENALTY'
+			processFootballProcedures('POPULATE-PENALTY');
+			break;						
 		/*case 114:
 			processFootballProcedures('POPULATE-MATCHSUBS');
 			break;	
@@ -169,7 +172,14 @@ function processUserSelectionData(whatToProcess,dataToProcess){
 			break;
 		case 84: 'T - OFFICIALS'
 			processFootballProcedures('POPULATE-OFFICIALS');
-			break;		
+			break;
+		case 80: 'p - OFFICIALS'
+			addItemsToList('PENALTY-OPTION',null);
+			//addItemsToList('PENALTY-BUTTON');
+			break;
+		case 85: 'u - PENALTY CHANGE'
+			processFootballProcedures('POPULATE-CHANGE_PENALTY');
+			break;				
 		/*case 69:'e'
 			addItemsToList('EXTRA-TIME_OPTION',null);
 			break;
@@ -194,6 +204,9 @@ function processUserSelection(whichInput)
 		}*/
 	  	document.initialise_form.submit();
 		break;
+	case 'penalty_graphics_btn':
+		addItemsToList('PENALTY-OPTION',match_data);
+		break;
 	case 'cancel_match_setup_btn':
 		document.setup_form.method = 'post';
 		document.setup_form.action = 'setup_to_match';
@@ -210,6 +223,13 @@ function processUserSelection(whichInput)
 		processFootballProcedures('LOAD_MATCH',$('#select_football_matches option:selected'));
 		break;
 	case 'cancel_graphics_btn':
+		$('#select_graphic_options_div').empty();
+		document.getElementById('select_graphic_options_div').style.display = 'none';
+		$("#select_event_div").show();
+		$("#match_configuration").show();
+		$("#football_div").show();
+		break;
+	case 'cancel_penalty_btn':
 		$('#select_graphic_options_div').empty();
 		document.getElementById('select_graphic_options_div').style.display = 'none';
 		$("#select_event_div").show();
@@ -245,7 +265,35 @@ function processUserSelection(whichInput)
 		break;
 	case 'populate_free_btn':
 		processFootballProcedures('POPULATE-FREE');
-		break;				
+		break;
+	default:
+		if($(whichInput).attr('id').includes('_btn') && $(whichInput).attr('id').split('_').length >= 4) {
+    		switch ($(whichInput).attr('id').split('_')[1]) {
+    		case 'increment':
+    			$('#' + $(whichInput).attr('id').split('_')[0] + '_' + $(whichInput).attr('id').split('_')[2] 
+					+ '_' + $(whichInput).attr('id').split('_')[3] + '_txt').val(
+					parseInt($('#' + $(whichInput).attr('id').split('_')[0] + '_' + $(whichInput).attr('id').split('_')[2] 
+					+ '_' + $(whichInput).attr('id').split('_')[3] + '_txt').val()) + 1
+				);
+				break;
+    		case 'decrement':
+				if(parseInt($('#' + $(whichInput).attr('id').split('_')[0] + '_' + $(whichInput).attr('id').split('_')[2] 
+					+ '_' + $(whichInput).attr('id').split('_')[3] + '_txt').val()) > 0) {
+	    			
+					$('#' + $(whichInput).attr('id').split('_')[0] + '_' + $(whichInput).attr('id').split('_')[2] 
+						+ '_' + $(whichInput).attr('id').split('_')[3] + '_txt').val(
+						parseInt($('#' + $(whichInput).attr('id').split('_')[0] + '_' + $(whichInput).attr('id').split('_')[2] 
+						+ '_' + $(whichInput).attr('id').split('_')[3] + '_txt').val()) - 1
+					);
+					
+				}
+				break;
+			}		
+			console.log(whichInput)		
+			processWaitingButtonSpinner('START_WAIT_TIMER');
+			processFootballProcedures('LOG_STAT',whichInput);
+		}
+		break;					
 	}
 }
 function processFootballProcedures(whatToProcess, whichInput)
@@ -259,6 +307,9 @@ function processFootballProcedures(whatToProcess, whichInput)
 		}
 		value_to_process = $('#matchFileTimeStamp').val();
 		break;
+	case 'LOG_STAT':
+		value_to_process = whichInput.id;
+		break;	
 	case 'LOAD_MATCH':
 		value_to_process = whichInput.val();
 		//alert(value_to_process);
@@ -287,6 +338,9 @@ function processFootballProcedures(whatToProcess, whichInput)
 		break;
 	case 'POPULATE-FREE':
 		value_to_process = 	$('#selectFirst').val() + ',' + $('#selectSecond').val();
+		break;
+	case 'POPULATE-PENALTY':
+		value_to_process = 	'D:\DOAD_In_House_Everest\Everest_Sports\Everest_Intercontinental_2024\Scene\BigScreen_New.sum';
 		break;							
 	}
 
@@ -356,11 +410,14 @@ function processFootballProcedures(whatToProcess, whichInput)
 				
         	case 'POPULATE-MATCHID': case 'POPULATE-SCORELINE': case 'POPULATE-TOURNAMENT_LOGO': case 'POPULATE-MATCHSUBS':
         	case 'POPULATE-SCORELINE': case 'POPULATE-TIME_EXTRA': case 'POPULATE-MATCHSTATS': case 'POPULATE-TEAMLIST':
-        	case 'POPULATE-L3-NAMESUPER-CARD': case 'POPULATE-SCOREBUG-SUBS': case 'POPULATE-OFFICIALS':
+        	case 'POPULATE-L3-NAMESUPER-CARD': case 'POPULATE-SCOREBUG-SUBS': case 'POPULATE-OFFICIALS': case 'POPULATE-PENALTY':
         	case 'POPULATE-GOAL': case 'POPULATE-ATTENDENCE': case 'POPULATE-AIFF': case 'POPULATE-ADDITIONAL':
         	case 'POPULATE-FREE': case 'POPULATE-WELCOME': case 'POPULATE-SECURITY': case 'POPULATE-NOTICE':
         		if(confirm('Animate In?') == true){
 					switch(whatToProcess){
+					case 'POPULATE-PENALTY':
+						processFootballProcedures('ANIMATE-IN-PENALTY');			
+						break;	
 					case 'POPULATE-WELCOME':
 						processFootballProcedures('ANIMATE-IN-WELCOME');
 						break;
@@ -981,7 +1038,111 @@ function addItemsToList(whatToProcess, dataToProcess)
 			document.getElementById('select_graphic_options_div').style.display = '';
 
 		break;
+	case 'PENALTY-OPTION':
 		
+		$('#select_graphic_options_div').empty();
+		
+		header_text = document.createElement('h6');
+		header_text.innerHTML = 'Select Graphic Options';
+		document.getElementById('select_graphic_options_div').appendChild(header_text);
+		
+		table = document.createElement('table');
+		table.setAttribute('class', 'table table-bordered');
+				
+		tbody = document.createElement('tbody');
+
+		table.appendChild(tbody);
+		document.getElementById('select_graphic_options_div').appendChild(table);
+		
+		row = tbody.insertRow(tbody.rows.length);
+
+		for(var i=1; i<=2; i++) {
+			div = document.createElement('div');
+			div.style = 'text-align:center;';
+			switch(i){
+			case 1:
+				text = 'home';
+				break;
+			case 2:
+				text = 'away';
+				break;
+			}
+			div.id = text + '_penalties_div';
+			for(var j=0; j<=5; j++) {
+				switch(j){
+				case 0: case 3:
+					header_text = document.createElement('label');
+					header_text.htmlFor = div.id;
+					option = document.createElement('input');
+					option.type = "button";
+					option.style = 'text-align:center;';
+					option.setAttribute('onclick','processUserSelection(this)');
+					switch(j){
+					case 0:
+						header_text.innerHTML = text.toUpperCase() + ' Hits: ';
+						option.id = text + '_increment_penalties_hit_btn';
+						break;
+					case 3:
+						header_text.innerHTML = 'Misses: ';
+						option.id = text + '_increment_penalties_miss_btn';
+						break;
+					}
+					option.value = "+";
+					div.appendChild(header_text).appendChild(option);
+					break;
+				case 1: case 4:
+	    			option = document.createElement('input');
+					option.type = 'text';
+					switch(j){
+					case 1:
+						option.id = text + '_penalties_hit_txt';
+						break;
+					case 4:
+						option.id = text + '_penalties_miss_txt';
+						break;
+					}
+					option.value = '0';
+					option.style = 'width:10%;text-align:center;';
+					div.appendChild(option);
+					break;
+				case 2: case 5:
+					option = document.createElement('input');
+					option.type = "button";
+					option.style = 'text-align:center;';
+					option.setAttribute('onclick','processUserSelection(this)');
+					switch(j){
+					case 2:
+						option.id = text + '_decrement_penalties_hit_btn';
+						break;
+					case 5:
+						option.id = text + '_decrement_penalties_miss_btn';
+						break;
+					}
+					option.value = "-";
+					div.appendChild(option);
+				    div.append(document.createElement('br'));
+					break;
+				}
+			}
+			row.insertCell(i-1).appendChild(div);
+		}
+
+		option = document.createElement('input');
+		option.type = 'button';
+		option.name = 'cancel_penalty_btn';
+		option.id = option.name;
+		option.value = 'Cancel';
+		option.setAttribute('onclick','processUserSelection(this)');
+
+	    div.appendChild(option);
+
+		row.insertCell(2).appendChild(div);
+		
+		table.appendChild(tbody);
+		
+		document.getElementById('select_graphic_options_div').style.display = '';
+		break;
+			
 	case 'LOAD_EVENTS':
 		
 		$('#select_event_div').empty();
@@ -1043,6 +1204,7 @@ function addItemsToList(whatToProcess, dataToProcess)
 				}
 				header_text.innerHTML = 'Events: ' + header_text.innerHTML;
 				row.insertCell(1).appendChild(header_text);
+				
 			}
 			
 			
@@ -1068,6 +1230,9 @@ function addItemsToList(whatToProcess, dataToProcess)
 			table.appendChild(thead);
 			document.getElementById('select_event_div').appendChild(table);
 			
+			// Penalty Section
+			
+		
 			/*tbody = document.createElement('tbody');
 			for(var i = 0; i <= dataToProcess.homeSquad.length - 1; i++) {
 				row = tbody.insertRow(tbody.rows.length);

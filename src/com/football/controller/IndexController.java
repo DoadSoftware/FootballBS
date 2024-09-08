@@ -176,6 +176,59 @@ public class IndexController
 					throws JAXBException, IllegalAccessException, InvocationTargetException, IOException, NumberFormatException, InterruptedException
 	{	
 		switch (whatToProcess.toUpperCase()) {
+		case FootballUtil.LOG_STAT:
+
+			if(valueToProcess.toUpperCase().contains(FootballUtil.PENALTIES)) {
+				if(valueToProcess.split("_")[1].toUpperCase().contains(FootballUtil.INCREMENT)) {
+					if(valueToProcess.split("_")[0].toUpperCase().contains(FootballUtil.HOME)) {
+						if(valueToProcess.split("_")[3].toUpperCase().contains(FootballUtil.HIT)) {
+							session_match.setHomePenaltiesHits(session_match.getHomePenaltiesHits() + 1);
+						}else if(valueToProcess.split("_")[3].toUpperCase().contains(FootballUtil.MISS)) {
+							session_match.setHomePenaltiesMisses(session_match.getHomePenaltiesMisses() + 1);
+						}
+					}else if(valueToProcess.split("_")[0].toUpperCase().contains(FootballUtil.AWAY)) {
+						if(valueToProcess.split("_")[3].toUpperCase().contains(FootballUtil.HIT)) {
+							session_match.setAwayPenaltiesHits(session_match.getAwayPenaltiesHits() + 1);
+						}else if(valueToProcess.split("_")[3].toUpperCase().contains(FootballUtil.MISS)) {
+							session_match.setAwayPenaltiesMisses(session_match.getAwayPenaltiesMisses() + 1);
+						}
+					}
+				}else if(valueToProcess.split("_")[1].toUpperCase().contains(FootballUtil.DECREMENT)) {
+					if(valueToProcess.split("_")[0].toUpperCase().contains(FootballUtil.HOME)) {
+						if(valueToProcess.split("_")[3].toUpperCase().contains(FootballUtil.HIT)) {
+							if(session_match.getHomePenaltiesHits() > 0) {
+								session_match.setHomePenaltiesHits(session_match.getHomePenaltiesHits() - 1);
+							}
+						}else if(valueToProcess.split("_")[3].toUpperCase().contains(FootballUtil.MISS)) {
+							if(session_match.getHomePenaltiesMisses() > 0) {
+								session_match.setHomePenaltiesMisses(session_match.getHomePenaltiesMisses() - 1);
+							}
+						}
+					}else if(valueToProcess.split("_")[0].toUpperCase().contains(FootballUtil.AWAY)) {
+						if(valueToProcess.split("_")[3].toUpperCase().contains(FootballUtil.HIT)) {
+							if(session_match.getAwayPenaltiesHits() > 0) {
+								session_match.setAwayPenaltiesHits(session_match.getAwayPenaltiesHits() - 1);
+							}
+						}else if(valueToProcess.split("_")[3].toUpperCase().contains(FootballUtil.MISS)) {
+							if(session_match.getAwayPenaltiesMisses() > 0) {
+								session_match.setAwayPenaltiesMisses(session_match.getAwayPenaltiesMisses() - 1);
+							}
+						}
+					}
+				}
+			}
+			
+			JAXBContext.newInstance(Match.class).createMarshaller().marshal(session_match, 
+					new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + session_match.getMatchFileName()));
+			
+			switch (session_selected_broadcaster) {
+			case "FOOTBALL":
+				this_Football.ProcessGraphicOption(whatToProcess, session_match, session_clock,SwapMatch, footballService, 
+						print_writer, session_selected_scenes, valueToProcess);
+				break;
+			}
+			//session_i_league.ProcessGraphicOption(whatToProcess,session_match, session_clock,footballService,session_socket, session_selected_scenes, valueToProcess);
+			return JSONObject.fromObject(session_match).toString();
 		case FootballUtil.LOAD_MATCH:
 			objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
 			

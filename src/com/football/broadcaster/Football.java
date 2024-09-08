@@ -35,6 +35,8 @@ public class Football extends Scene {
 	public long last_date = 0;
 	public int Whichside = 2;
 	public String logo_path = "C:/Images/Super_Cup/Logos/";
+	public static List<String> penalties;
+	public static List<String> penaltiesremove;
 	
 	public Football() {
 		super();
@@ -56,24 +58,160 @@ public class Football extends Scene {
 	
 	public Object ProcessGraphicOption(String whatToProcess, Match match,Clock clock, Match swapMatch, FootballService footballService,PrintWriter print_writer, List<Scene> scenes, String valueToProcess)
 			throws InterruptedException, NumberFormatException, MalformedURLException, IOException, JAXBException {
+		
+		if (which_graphics_onscreen == "PENALTY")
+		{
+			int iHomeCont = 0, iAwayCont = 0;
+			penalties.add(valueToProcess.split(",")[0]);
+			
+			for(String pen : penalties)
+			{	
+				if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+					iHomeCont = iHomeCont + 1;
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 2;");
+					
+				}else if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+					iHomeCont = iHomeCont + 1;
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 1;");
+				}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+					iAwayCont = iAwayCont + 1;
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 2;");
+				}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+					iAwayCont = iAwayCont + 1;
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 1;");
+				}else if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 0;");
+					
+					if(iHomeCont > 0) {
+						iHomeCont = iHomeCont - 1;
+					}
+				}else if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 0;");
+
+					if(iHomeCont > 0) {
+						iHomeCont = iHomeCont - 1;
+					}
+				}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 0;");
+
+					if(iAwayCont > 0) {
+						iAwayCont = iAwayCont - 1;
+					}
+				}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 0;");
+
+					if(iAwayCont > 0) {
+						iAwayCont = iAwayCont - 1;
+					}
+				}
+			}
+			if(match.getHomePenaltiesHits() == 0 && match.getAwayPenaltiesHits() == 0 && 
+					match.getHomePenaltiesMisses() == 0 && match.getAwayPenaltiesMisses() == 0) {
+				penalties = new ArrayList<String>();
+				penaltiesremove = new ArrayList<String>();
+			}
+		} 
+		else {
+			for(int p=1;p<=5;p++) {
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + p + " 0;");
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + p + " 0;");
+			}
+			
+			if(penalties == null) {
+				penalties = new ArrayList<String>();
+				penaltiesremove = new ArrayList<String>();
+			}
+			if(match.getHomePenaltiesHits() == 0 && match.getAwayPenaltiesHits() == 0 && 
+					match.getHomePenaltiesMisses() == 0 && match.getAwayPenaltiesMisses() == 0) {
+				penalties = new ArrayList<String>();
+				penaltiesremove = new ArrayList<String>();
+			}
+			int iHomeCont = 0, iAwayCont = 0;
+			penalties.add(valueToProcess.split(",")[0]);
+			if((match.getHomePenaltiesHits()+match.getHomePenaltiesMisses()) != 0 && (match.getAwayPenaltiesHits()+match.getAwayPenaltiesHits()) != 0) {
+				if(((match.getHomePenaltiesHits() + match.getHomePenaltiesMisses())%5) == 0 && 
+						((match.getAwayPenaltiesHits() + match.getAwayPenaltiesMisses())%5) == 0) {
+					if(match.getHomePenaltiesHits() == match.getAwayPenaltiesHits()) {
+						penalties = new ArrayList<String>();
+//						for(int p=1;p<=5;p++) {
+//							print_writer.get(0).println("-1 RENDERER*TREE*$Main$All$AllOut$DataGrp$PenalyGrp$PenaltyDots$HomePenalties$" + p + "$SelectPenaltyType*FUNCTION*Omo*vis_con SET " + "0" + "\0");
+//							print_writer.get(0).println("-1 RENDERER*TREE*$Main$All$AllOut$DataGrp$PenalyGrp$PenaltyDots$AwayPenalties$" + p + "$SelectPenaltyType*FUNCTION*Omo*vis_con SET " + "0" + "\0");
+//						}
+					}
+				}
+			}
+			
+			//print_writer.get(0).println("LAYER2*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tScore " + match.getHomePenaltiesHits() + "-" + match.getAwayPenaltiesHits() + ";");
+
+			for(String pen : penalties)
+			{
+				//System.out.println("ELSE LOOP - " + iHomeCont);
+				if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+					iHomeCont = iHomeCont + 1;
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 2;");
+				}else if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+					iHomeCont = iHomeCont + 1;
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 1;");
+				}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+					iAwayCont = iAwayCont + 1;
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 2;");
+				}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+					iAwayCont = iAwayCont + 1;
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 1;");
+				}else if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 0;");
+
+					if(iHomeCont > 0) {
+						iHomeCont = iHomeCont - 1;
+					}
+					
+				}else if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 0;");
+
+					if(iHomeCont > 0) {
+						iHomeCont = iHomeCont - 1;
+					}
+				}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 0;");
+			
+					if(iAwayCont > 0) {
+						iAwayCont = iAwayCont - 1;
+					}
+				}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+					print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 0;");
+					
+					if(iAwayCont > 0) {
+						iAwayCont = iAwayCont - 1;
+					}
+				}
+			}
+		}
+		
 		switch (whatToProcess.toUpperCase()) {
 		//ScoreBug
 		case "POPULATE-MATCHID": case "POPULATE-SCORELINE": case "POPULATE-TOURNAMENT_LOGO": case "POPULATE-EXTRA_TIME":
 		case "POPULATE-SCOREBUG-SUBS": case "POPULATE-MATCHSUBS": case "POPULATE-TIME_EXTRA": case "POPULATE-MATCHSTATS":
 		case "POPULATE-TEAMLIST": case "POPULATE-L3-NAMESUPER-CARD": case "POPULATE-OFFICIALS": case "POPULATE-GOAL":
 		case "POPULATE-ATTENDENCE": case "POPULATE-AIFF": case "POPULATE-ADDITIONAL": case "POPULATE-FREE":
-		case "POPULATE-WELCOME": case "POPULATE-SECURITY": case "POPULATE-NOTICE":	
+		case "POPULATE-WELCOME": case "POPULATE-SECURITY": case "POPULATE-NOTICE":	case "POPULATE-PENALTY":
+		case "POPULATE-CHANGE_PENALTY":	
 			
 		switch (whatToProcess.toUpperCase()) {
 		case "POPULATE-MATCHID": case "POPULATE-SCORELINE": case "POPULATE-TOURNAMENT_LOGO": case "POPULATE-L3-NAMESUPER-CARD":
 		case "POPULATE-MATCHSUBS":  case "POPULATE-TIME_EXTRA": case "POPULATE-MATCHSTATS": case "POPULATE-TEAMLIST":
 		case "POPULATE-SCOREBUG-SUBS": case "POPULATE-OFFICIALS": case "POPULATE-GOAL": case "POPULATE-ATTENDENCE":
-		case "POPULATE-AIFF": case "POPULATE-ADDITIONAL": case "POPULATE-FREE":
+		case "POPULATE-AIFF": case "POPULATE-ADDITIONAL": case "POPULATE-FREE": case "POPULATE-PENALTY":
 		case "POPULATE-WELCOME": case "POPULATE-SECURITY": case "POPULATE-NOTICE":	
 			scenes.get(0).scene_load(print_writer, session_selected_broadcaster);
 			break;
 		}
 		switch (whatToProcess.toUpperCase()) {
+		case "POPULATE-PENALTY":
+			populateLtPenalty(print_writer,false, footballService,match,clock, session_selected_broadcaster);
+			break;
+		case "POPULATE-CHANGE_PENALTY":
+			populateLtPenaltyChange(print_writer, match,session_selected_broadcaster);
+			break;
 		case "POPULATE-WELCOME":
 			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 11;");
 			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectMessage 0;");
@@ -173,7 +311,28 @@ public class Football extends Scene {
 			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vScoreVS 0;");
 			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader " + 
 					match.getMatchIdent().toUpperCase() + ";");
-//			populateCommonData(print_writer,false, match, session_selected_broadcaster);
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET lgHomeTeamLogo " + logo_path + 
+		            match.getHomeTeam().getTeamName4() + ".png" + ";");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET lgAwayTeamLogo " + logo_path + 
+		            match.getAwayTeam().getTeamName4() + ".png" + ";");
+		    
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tHomeTeamName " + 
+		            match.getHomeTeam().getTeamName1() + ";");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tAwayTeamName " + 
+		            match.getAwayTeam().getTeamName1() + ";");
+			
+			print_writer.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out STOP;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 88.0;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL SNAPSHOT_PATH C:/Temp/Preview.png;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL SNAPSHOT 1920 1080;");
+			TimeUnit.SECONDS.sleep(1);
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*Out SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*STAGE*DIRECTOR*In SHOW 0.0;");
+			print_writer.println("LAYER1*EVEREST*GLOBAL PREVIEW OFF;");
+			//populateCommonData(print_writer,false, match, session_selected_broadcaster);
 			break;
 		case "POPULATE-MATCHSUBS":
 			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 2;");
@@ -196,10 +355,15 @@ public class Football extends Scene {
 		case "ANIMATE-IN-NAMESUPER-CARD": case "ANIMATE-IN-TEAMLIST": case "ANIMATE-IN-SCOREBUG-SUBS":
 		case "ANIMATE-IN-OFFICIALS": case "ANIMATE-IN-GOAL": case "ANIMATE-IN-FREE": case "ANIMATE-IN-ADDITIONAL":
 		case "ANIMATE-IN-AIFF": case "ANIMATE-IN-ATTENDENCE": case "ANIMATE-IN-WELCOME": case "ANIMATE-IN-SECURITY": 
-		case "ANIMATE-IN-NOTICE":
+		case "ANIMATE-IN-NOTICE": case "ANIMATE-IN-PENALTY":
 			
 			
 			switch (whatToProcess.toUpperCase()) {
+			case "ANIMATE-IN-PENALTY":
+				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
+				is_infobar = true;
+				which_graphics_onscreen = "PENALTY";
+				break;
 			case "ANIMATE-IN-WELCOME": case "ANIMATE-IN-SECURITY": case "ANIMATE-IN-NOTICE":
 				processAnimation(print_writer, "In", "START", session_selected_broadcaster,1);
 				is_infobar = true;
@@ -717,6 +881,116 @@ public class Football extends Scene {
 		return scorebug;
 	}
 
+	public void populateLtPenalty(PrintWriter print_writer,boolean is_this_updating,FootballService footballService,Match match,Clock clock, String session_selected_broadcaster) 
+			throws InterruptedException, IOException{
+		
+		int l=200;
+		int iHomeCont = 0, iAwayCont = 0;
+		
+		if(is_this_updating == false) {
+			for(int p=1;p<=5;p++) {
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + p + " 0;");
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + p + " 0;");
+			}
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 12;");
+			
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET lgHomeTeamLogo " + logo_path + 
+		            match.getHomeTeam().getTeamName4() + ".png" + ";");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET lgAwayTeamLogo " + logo_path + 
+		            match.getAwayTeam().getTeamName4() + ".png" + ";");
+		    
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tHomeTeamName " + 
+		            match.getHomeTeam().getTeamName1() + ";");
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tAwayTeamName " + 
+		            match.getAwayTeam().getTeamName1() + ";");
+			
+			print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader " + match.getMatchIdent() + ";");
+		}
+		
+		TimeUnit.MILLISECONDS.sleep(l);
+		
+//		for(int p=1;p<=5;p++) {
+//			print_writer.get(0).println("-1 RENDERER*TREE*$Main$All$AllOut$DataGrp$PenalyGrp$PenaltyDots$HomePenalties$" + p + "$SelectPenaltyType$txt_PenaltyNumber*GEOM*TEXT SET " + 
+//					p + "\0");
+//			print_writer.get(0).println("-1 RENDERER*TREE*$Main$All$AllOut$DataGrp$PenalyGrp$PenaltyDots$AwayPenalties$" + p + "$SelectPenaltyType$txt_PenaltyNumber*GEOM*TEXT SET " + 
+//					p + "\0");
+//		}
+		
+		for(String pen : penalties)
+		{
+			if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+				iHomeCont = iHomeCont + 1;
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 2;");
+				
+			}else if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+				iHomeCont = iHomeCont + 1;
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 1;");
+				
+			}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES$" + "_" + FootballUtil.HIT)) {
+				iAwayCont = iAwayCont + 1;
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 2;");
+				
+			}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.INCREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+				iAwayCont = iAwayCont + 1;
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 1;");
+			}
+			
+			
+			if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 0;");
+				if(iHomeCont > 0) {
+					iHomeCont = iHomeCont - 1;
+				}
+			}else if(pen.toUpperCase().contains(FootballUtil.HOME + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + iHomeCont + " 0;");
+				if(iHomeCont > 0) {
+					iHomeCont = iHomeCont - 1;
+				}
+			}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.HIT)) {
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 0;");
+				if(iAwayCont > 0) {
+					iAwayCont = iAwayCont - 1;
+				}
+			}else if(pen.toUpperCase().contains(FootballUtil.AWAY + "_" + FootballUtil.DECREMENT + "_" + "PENALTIES" + "_" + FootballUtil.MISS)) {
+				print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + iAwayCont + " 0;");
+				if(iAwayCont > 0) {
+					iAwayCont = iAwayCont - 1;
+				}
+			}
+		}
+	}
+	public void populateLtPenaltyChange(PrintWriter print_writer,Match match, String session_selected_broadcaster) throws InterruptedException, IOException{
+		
+		int iHomeCont = 0, iAwayCont = 0;
+		int HomeTotal = 0,AwayTotal=0;
+		
+		iHomeCont = (match.getHomePenaltiesHits() + match.getHomePenaltiesMisses());
+		iAwayCont = (match.getAwayPenaltiesHits() + match.getAwayPenaltiesMisses());
+		
+		HomeTotal = iHomeCont + 5;
+		AwayTotal = iAwayCont + 5;
+		
+		if(((match.getHomePenaltiesHits()+match.getHomePenaltiesMisses())%5) == 0 && ((match.getAwayPenaltiesHits()+match.getAwayPenaltiesMisses())%5) == 0) {
+			if(match.getHomePenaltiesHits() == match.getAwayPenaltiesHits()) {
+				penalties = new ArrayList<String>();
+					for(int p=1;p<=5;p++) {
+						print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vHomePenalty0" + p + " 0;");
+						print_writer.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vAwayPenalty0" + p + " 0;");
+					}
+			}
+		}
+		
+//		for(int h=iHomeCont+1;h<=HomeTotal;h++) {
+//			print_writer.get(0).println("-1 RENDERER*TREE*$Main$All$AllOut$DataGrp$PenalyGrp$PenaltyDots$HomePenalties$" + (h-iHomeCont) + "$SelectPenaltyType$txt_PenaltyNumber*GEOM*TEXT SET " + 
+//					h + "\0");
+//		}
+//		
+//		for(int a=iAwayCont+1;a<=AwayTotal;a++) {
+//			print_writer.get(0).println("-1 RENDERER*TREE*$Main$All$AllOut$DataGrp$PenalyGrp$PenaltyDots$AwayPenalties$" + (a-iAwayCont) + "$SelectPenaltyType$txt_PenaltyNumber*GEOM*TEXT SET " + 
+//					a + "\0");
+//		}
+	}
+	
 	public void populateMatchStats(PrintWriter print_writer,boolean isThisUpdating,FootballService footballService, Match match, String session_selected_broadcaster) throws InterruptedException, IOException{
 		int l = 4;
 		//String Home_player="",Away_player="";
