@@ -1,6 +1,5 @@
 package com.football.controller;
 
-import java.io.Console;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -11,14 +10,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,9 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.football.broadcaster.Football;
 import com.football.containers.Scene;
 import com.football.containers.ScoreBug;
@@ -40,9 +35,6 @@ import com.football.model.Configurations;
 import com.football.model.Event;
 import com.football.model.EventFile;
 import com.football.model.Match;
-import com.football.service.FootballService;
-import com.football.util.FootballFunctions;
-import com.football.util.FootballUtil;
 
 import net.sf.json.JSONObject;
 
@@ -91,7 +83,7 @@ public class IndexController
 			@Override
 		    public boolean accept(File pathname) {
 		        String name = pathname.getName().toLowerCase();
-		        return name.endsWith(".xml") && pathname.isFile();
+		        return name.endsWith(".json") && pathname.isFile();
 		    }
 		}));
 		
@@ -120,7 +112,7 @@ public class IndexController
 			@Override
 		    public boolean accept(File pathname) {
 		        String name = pathname.getName().toLowerCase();
-		        return name.endsWith(".xml") && pathname.isFile();
+		        return name.endsWith(".json") && pathname.isFile();
 		    }
 		}));
 
@@ -218,8 +210,11 @@ public class IndexController
 				}
 			}
 			
-			JAXBContext.newInstance(Match.class).createMarshaller().marshal(session_match, 
-					new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + session_match.getMatchFileName()));
+			new ObjectMapper().writeValue(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + 
+					session_match.getMatchFileName()), session_match);
+			
+//			JAXBContext.newInstance(Match.class).createMarshaller().marshal(session_match, 
+//					new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + session_match.getMatchFileName()));
 			
 			switch (session_selected_broadcaster) {
 			case "FOOTBALL":
@@ -232,22 +227,32 @@ public class IndexController
 		case FootballUtil.LOAD_MATCH:
 			objectMapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
 			
-			session_match = FootballFunctions.populateMatchVariables(footballService, (Match) JAXBContext.newInstance(Match.class).createUnmarshaller()
-					.unmarshal(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + valueToProcess)));
+//			session_match = FootballFunctions.populateMatchVariables(footballService, (Match) JAXBContext.newInstance(Match.class).createUnmarshaller()
+//					.unmarshal(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + valueToProcess)));
+			
+			session_match = new ObjectMapper().readValue(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + 
+					valueToProcess), Match.class);
 			
 			if(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + valueToProcess).exists()) {
-				session_event = (EventFile) JAXBContext.newInstance(EventFile.class).createUnmarshaller().unmarshal(
-						new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + valueToProcess));
+//				session_event = (EventFile) JAXBContext.newInstance(EventFile.class).createUnmarshaller().unmarshal(
+//						new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + valueToProcess));
+				
+				session_event = new ObjectMapper().readValue(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + 
+						valueToProcess), EventFile.class);
 			} else {
 				session_event = new EventFile();
 				//new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + valueToProcess).createNewFile();
+				new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + valueToProcess).createNewFile();
 			}
 			
 			session_match.setEvents(session_event.getEvents());
 			
-			if(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_XML).exists()) {
-				session_match.setClock((Clock) JAXBContext.newInstance(Clock.class).createUnmarshaller().unmarshal(
-						new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_XML)));
+			if(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_JSON).exists()) {
+//				session_match.setClock((Clock) JAXBContext.newInstance(Clock.class).createUnmarshaller().unmarshal(
+//						new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_XML)));
+				
+				session_clock = new ObjectMapper().readValue(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_JSON), Clock.class);
+				session_match.setClock(session_clock);
 			} else {
 				session_match.setClock(new Clock());
 			}
@@ -270,12 +275,19 @@ public class IndexController
 				if(session_match != null && !valueToProcess.equalsIgnoreCase(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(
 						new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + session_match.getMatchFileName()).lastModified())))
 				{
-					session_match = FootballFunctions.populateMatchVariables(footballService, (Match) JAXBContext.newInstance(Match.class).createUnmarshaller()
-							.unmarshal(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + session_match.getMatchFileName())));
+					session_match = new ObjectMapper().readValue(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + 
+							valueToProcess), Match.class);
+					
+//					session_match = FootballFunctions.populateMatchVariables(footballService, (Match) JAXBContext.newInstance(Match.class).createUnmarshaller()
+//							.unmarshal(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.MATCHES_DIRECTORY + session_match.getMatchFileName())));
 					
 					if(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + session_match.getMatchFileName()).exists()) {
-						session_event = (EventFile) JAXBContext.newInstance(EventFile.class).createUnmarshaller().unmarshal(
-								new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + session_match.getMatchFileName()));
+						
+						session_event = new ObjectMapper().readValue(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + 
+								valueToProcess), EventFile.class);
+						
+//						session_event = (EventFile) JAXBContext.newInstance(EventFile.class).createUnmarshaller().unmarshal(
+//								new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + session_match.getMatchFileName()));
 					}else {
 						session_event = new EventFile();
 						//new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.EVENT_DIRECTORY + valueToProcess).createNewFile();
@@ -287,11 +299,18 @@ public class IndexController
 					
 				}
 				
+				File clockFile = new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_JSON);
+				
+				
 				if(session_match != null) {
-					if(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_XML).exists()) {
-						session_clock = (Clock) JAXBContext.newInstance(Clock.class).createUnmarshaller().unmarshal(
-								new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_XML));
+					if(new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_JSON).exists() && clockFile.canRead()) {
+						
+						session_clock = new ObjectMapper().readValue(clockFile, Clock.class);;
 						session_match.setClock(session_clock);
+						
+//						session_clock = (Clock) JAXBContext.newInstance(Clock.class).createUnmarshaller().unmarshal(
+//								new File(FootballUtil.FOOTBALL_DIRECTORY + FootballUtil.CLOCK_XML));
+//						session_match.setClock(session_clock);
 						this_Football.updateScoreBug(session_selected_scenes, session_match, SwapMatch,footballService, print_writer);
 					}
 				}
