@@ -215,7 +215,7 @@ function processUserSelection(whichInput)
 	case 'matchFileName':
 		if(document.getElementById('matchFileName').value) {
 			document.getElementById('matchFileName').value = 
-				document.getElementById('matchFileName').value.replace('.xml','') + '.json';
+				document.getElementById('matchFileName').value.replace('.json','') + '.json';
 		}
 		break;
 	case 'load_match_btn':
@@ -312,7 +312,6 @@ function processFootballProcedures(whatToProcess, whichInput)
 		break;	
 	case 'LOAD_MATCH':
 		value_to_process = whichInput.val();
-		//alert(value_to_process);
 		break;
 	case 'READ_CLOCK':
 		valueToProcess = $('#matchFileTimeStamp').val();
@@ -384,11 +383,20 @@ function processFootballProcedures(whatToProcess, whichInput)
 				}
 				
 				if(data){
-					session_match = data;
+					if($('#matchFileTimeStamp').val() != data.matchFileTimeStamp) {
+						document.getElementById('matchFileTimeStamp').value = data.matchFileTimeStamp;
+						session_match = data;
+						addItemsToList('LOAD_MATCH',data);
+						addItemsToList('LOAD_EVENTS',data);
+						document.getElementById('select_event_div').style.display = '';
+					}
+					/*session_match = data;
 					addItemsToList('LOAD_MATCH',data);
 					addItemsToList('LOAD_EVENTS',data);
 					document.getElementById('football_div').style.display = '';
-					document.getElementById('select_event_div').style.display = '';
+					document.getElementById('select_event_div').style.display = '';*/
+					
+					
 					/*if($('#matchFileTimeStamp').val() != data.matchFileTimeStamp) {
 						document.getElementById('matchFileTimeStamp').value = data.matchFileTimeStamp;
 						session_match = data;
@@ -1207,7 +1215,7 @@ function addItemsToList(whatToProcess, dataToProcess)
 				
 			}
 			
-			
+			//console.log(dataToProcess);
 			table = document.createElement('table');
 			table.setAttribute('class', 'table table-bordered');
 			thead = document.createElement('thead');
