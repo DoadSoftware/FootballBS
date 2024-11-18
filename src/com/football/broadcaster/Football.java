@@ -1401,6 +1401,8 @@ public class Football extends Scene {
 		
 		if(TeamId == match.getHomeTeamId()) {
 			
+			printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader PLAYER CARD - " + match.getHomeTeam().getTeamName1() + " ;");
+			
 			for(Player hs : match.getHomeSquad()) {
 				if(playerId == hs.getPlayerId()) {
 					printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tNumber " + hs.getJersey_number() + ";");
@@ -1427,6 +1429,8 @@ public class Football extends Scene {
 			}
 		}
 		else {
+			
+			printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tSubHeader PLAYER CARD - " + match.getAwayTeam().getTeamName1() + " ;");
 			
 			for(Player as : match.getAwaySquad()) {
 				if(playerId == as.getPlayerId()) {
@@ -1514,7 +1518,7 @@ public class Football extends Scene {
 	public void populateAttendence(PrintWriter printWriter,String data, Match match, String selectedBroadcaster) throws InterruptedException {
 		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 10;");
 		
-		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 ATTENDANCE;");
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 OFFICIAL ATTENDANCE;");
 		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText02 " + data + ";");
 		
 		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
@@ -1535,7 +1539,7 @@ public class Football extends Scene {
 		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET vSelectLogo_Data 10;");
 		
 		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText01 ;");
-		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText02 AIFF MEETING;");
+		printWriter.println("LAYER1*EVEREST*TREEVIEW*Main*FUNCTION*TAG_CONTROL SET tFreeText02 FIFA MEETING;");
 		
 		printWriter.println("LAYER1*EVEREST*GLOBAL PREVIEW ON;");
 	    printWriter.println("LAYER1*EVEREST*STAGE*DIRECTOR*In STOP;");

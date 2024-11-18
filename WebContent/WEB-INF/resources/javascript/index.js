@@ -179,10 +179,11 @@ function processUserSelectionData(whatToProcess,dataToProcess){
 			break;
 		case 85: 'u - PENALTY CHANGE'
 			processFootballProcedures('POPULATE-CHANGE_PENALTY');
-			break;				
-		/*case 69:'e'
-			addItemsToList('EXTRA-TIME_OPTION',null);
 			break;
+		case 69:'e'
+			addItemsToList('EXTRA-TIME_OPTION',null);
+			break;					
+		/*
 		case 82:'r'
 			addItemsToList('TIME-EXTRA_OPTION',null);
 			break;
